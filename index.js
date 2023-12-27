@@ -6,9 +6,9 @@ import express from "express";
 import path from "path";
 
 
-const __dirname = process.cwd();
+const currentWorkDir = process.cwd();
 
-const buildDir = path.join(__dirname, "build");
+const buildDir = path.join(currentWorkDir, "build");
 const port = 4173;
 
 const app = express();
@@ -53,7 +53,7 @@ async function prerender(urls) {
     console.log(`Rendering ${url}...`);
 
     await page.goto(`http://localhost:${port}/${url}`, {
-      waitUntil: "networkidle2",
+      waitUntil: "networkidle0",
     });
 
     const htmlContent = await page.content();
