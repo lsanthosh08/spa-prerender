@@ -14,7 +14,13 @@
     "type": "git",
     "url": "https://github.com/lsanthosh08/react-prerender"
   },
-  "keywords": [],
+  "keywords": [
+    "react-prerender",
+    "pre-render",
+    "react",
+    "spa",
+    "web app"
+  ],
   "author": "Santhosh Lakshminarayanan",
   "license": "ISC",
   "bugs": {
