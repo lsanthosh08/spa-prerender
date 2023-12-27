@@ -44,7 +44,7 @@ async function prerender() {
   const urls = Array.isArray(config?.urls) ? config?.urls : [""];
 
   const browser = await puppeteer.launch({
-    headless: config?.headless == "true" ? false : "new",
+    headless: config?.headless === false ? false : "new",
   });
 
   const page = await browser.newPage();
