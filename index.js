@@ -5,11 +5,9 @@ import puppeteer from "puppeteer";
 import express from "express";
 import path from "path";
 
-
 const currentWorkDir = process.cwd();
 
-const buildDir = path.join(currentWorkDir, "build");
-const port = 4173;
+let config, buildDir, port, host, server;
 
 const app = express();
 
@@ -21,13 +19,12 @@ async function ensureBuildDir() {
 }
 
 async function launchServer() {
-  await ensureBuildDir();
-
   app.use(express.static(buildDir));
 
+  const indexPath = path.join(buildDir, "index.html");
+
   // Always serve 'index.html' for any route
-  app.get("*", (req, res) => {
-    const indexPath = path.join(buildDir, "index.html");
+  app.get("*", (_, res) => {
     fs.readFile(indexPath, "utf8")
       .then((content) => {
         res.send(content);
@@ -39,15 +36,47 @@ async function launchServer() {
   });
 
   return app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on ${host}`);
   });
 }
 
-async function prerender(urls) {
-  const browser = await puppeteer.launch({ headless: true });
+async function prerender() {
+  const urls = Array.isArray(config?.urls) ? config?.urls : [""];
+
+  const browser = await puppeteer.launch({
+    headless: config?.headless == "true" ? false : "new",
+  });
+
   const page = await browser.newPage();
 
-  const server = await launchServer();
+  await page.setRequestInterception(true);
+
+  page.on("request", (req) => {
+    const reqUrl = req.url();
+    const reqResourceType = req.resourceType();
+    const allowedHost = [host];
+
+    if (Array.isArray(config?.allowedHost)) {
+      allowedHost.concat(config?.allowedHost);
+    } else if (typeof config?.allowedHost === "string") {
+      allowedHost.push(config?.allowedHost);
+    }
+
+    if (
+      !(
+        Array.isArray(config?.blockedResourceType)
+          ? config?.blockedResourceType
+          : ["image"]
+      ).includes(reqResourceType) &&
+      (!config?.allowedHost || config?.allowedHost?.includes("*")
+        ? true
+        : allowedHost?.some((host) => host && reqUrl.startsWith(host)))
+    ) {
+      req.continue();
+    } else {
+      req.abort("aborted");
+    }
+  });
 
   for (const url of urls) {
     console.log(`Rendering ${url}...`);
@@ -70,16 +99,31 @@ async function prerender(urls) {
   }
 
   await browser.close();
-  server.close();
 }
 
 async function run() {
   try {
+    config = JSON.parse(
+      await fs.readFile(path.join(currentWorkDir, "package.json"), "utf8")
+    )?.spr_config;
+
+    buildDir = path.join(currentWorkDir, config?.buildDir || "build");
+
+    port = config?.port || 4173;
+    host = config?.appHost || `http://localhost:${port}`;
+
     await ensureBuildDir();
-    await prerender(["", "contact-us"]);
+
+    if (!config?.appHost) {
+      await launchServer();
+    }
+
+    await prerender();
   } catch (err) {
     console.error("Error starting server and prerendering:", err);
   }
+  if (server) server.close();
+  else process.exit(0);
 }
 
 // Run the application
