@@ -44,7 +44,7 @@ async function launchServer() {
 }
 
 async function prerender(urls) {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
   const server = await launchServer();
