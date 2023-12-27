@@ -3,11 +3,11 @@
 import fs from "fs/promises";
 import puppeteer from "puppeteer";
 import express from "express";
-import { fileURLToPath } from "url";
 import path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
+const __dirname = process.cwd();
+
 const buildDir = path.join(__dirname, "build");
 const port = 4173;
 
@@ -53,7 +53,7 @@ async function prerender(urls) {
     console.log(`Rendering ${url}...`);
 
     await page.goto(`http://localhost:${port}/${url}`, {
-      waitUntil: "networkidle0",
+      waitUntil: "networkidle2",
     });
 
     const htmlContent = await page.content();
