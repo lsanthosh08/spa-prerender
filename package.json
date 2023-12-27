@@ -2,9 +2,10 @@
   "name": "start-pre-render",
   "version": "1.0.0",
   "description": "Pre-render any web app after build",
+  "type": "module",
   "main": "index.js",
   "bin": {
-    "start-pre-render": "node index.js"
+    "start-pre-render": "./index.js"
   },
   "scripts": {
     "start": "node index.js"
