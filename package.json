@@ -1,0 +1,27 @@
+{
+  "name": "start-pre-render",
+  "version": "1.0.0",
+  "description": "Pre-render any web app after build",
+  "main": "index.js",
+  "bin": {
+    "start-pre-render": "node index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lsanthosh08/react-prerender"
+  },
+  "keywords": [],
+  "author": "Santhosh Lakshminarayanan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lsanthosh08/react-prerender/issues"
+  },
+  "homepage": "https://github.com/lsanthosh08/react-prerender#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "puppeteer": "^21.6.1"
+  }
+}
