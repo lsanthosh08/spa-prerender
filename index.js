@@ -22,17 +22,11 @@ async function launchServer() {
   app.use(express.static(buildDir));
 
   const indexPath = path.join(buildDir, "index.html");
-
+  const indexHtml = await fs.readFile(indexPath, "utf8");
   // Always serve 'index.html' for any route
   app.get("*", (_, res) => {
-    fs.readFile(indexPath, "utf8")
-      .then((content) => {
-        res.send(content);
-      })
-      .catch((err) => {
-        console.error("Error reading 'index.html':", err);
-        res.status(500).send("Internal Server Error");
-      });
+    if (indexHtml) res.send(indexHtml);
+    else res.status(500).send("Internal Server Error");
   });
 
   return app.listen(port, () => {
@@ -79,9 +73,9 @@ async function prerender() {
   });
 
   for (const url of urls) {
-    console.log(`Rendering ${url}...`);
+    console.log(`Rendering ${host}/${url}...`);
 
-    await page.goto(`http://localhost:${port}/${url}`, {
+    await page.goto(`${host}/${url}`, {
       waitUntil: "networkidle0",
     });
 
