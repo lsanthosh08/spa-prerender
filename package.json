@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lsanthosh08/react-prerender"
+    "url": "https://github.com/lsanthosh08/spa-prerender"
   },
   "keywords": [
     "react-prerender",
@@ -23,9 +23,9 @@
   "author": "Santhosh Lakshminarayanan",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lsanthosh08/react-prerender/issues"
+    "url": "https://github.com/lsanthosh08/spa-prerender/issues"
   },
-  "homepage": "https://github.com/lsanthosh08/react-prerender#readme",
+  "homepage": "https://github.com/lsanthosh08/spa-prerender#readme",
   "dependencies": {
     "express": "^4.18.2",
     "puppeteer": "^21.6.1"
