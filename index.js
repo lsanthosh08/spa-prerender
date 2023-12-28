@@ -59,7 +59,7 @@ async function prerender() {
       !(
         Array.isArray(config?.blockedResourceType)
           ? config?.blockedResourceType
-          : ["image"]
+          : []
       ).includes(reqResourceType) &&
       (!config?.allowedHost || config?.allowedHost?.includes("*")
         ? true
