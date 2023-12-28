@@ -91,7 +91,7 @@ async function prerender() {
 
     const htmlContent = await page.content();
 
-    const fileName = url ? `${url}.html` : "index.html";
+    const fileName = `${url.split("?")[0] || "index"}.html`;
     const filePath = join(sourceDir, fileName);
 
     try {
