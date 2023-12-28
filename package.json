@@ -1,6 +1,6 @@
 {
   "name": "spa-prerender",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Pre-render any web app like react, vue, preact, ect,. after production build",
   "main": "index.js",
   "bin": {
