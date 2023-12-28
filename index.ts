@@ -1,28 +1,39 @@
 #!/usr/bin/env node
 
-import fs from "fs/promises";
+import { stat, readFile, writeFile } from "fs/promises";
 import puppeteer from "puppeteer";
 import express from "express";
-import path from "path";
+import { join } from "path";
 
 const currentWorkDir = process.cwd();
 
-let config, buildDir, port, host, server;
+let config: {
+    headless: boolean;
+    sourceDir: string;
+    allowedHost: string[];
+    port: number;
+    urls: string[];
+    blockedResourceType: string[];
+    appHost: string;
+  },
+  sourceDir: string,
+  port: number,
+  host: string;
 
 const app = express();
 
 async function ensureBuildDir() {
-  const stats = await fs.stat(buildDir);
+  const stats = await stat(sourceDir);
   if (!stats.isDirectory()) {
     throw new Error("The 'build' directory is not a valid directory.");
   }
 }
 
 async function launchServer() {
-  app.use(express.static(buildDir));
+  app.use(express.static(sourceDir));
 
-  const indexPath = path.join(buildDir, "index.html");
-  const indexHtml = await fs.readFile(indexPath, "utf8");
+  const indexPath = join(sourceDir, "index.html");
+  const indexHtml = await readFile(indexPath, "utf8");
   // Always serve 'index.html' for any route
   app.get("*", (_, res) => {
     if (indexHtml) res.send(indexHtml);
@@ -81,10 +92,10 @@ async function prerender() {
     const htmlContent = await page.content();
 
     const fileName = url ? `${url}.html` : "index.html";
-    const filePath = path.join(buildDir, fileName);
+    const filePath = join(sourceDir, fileName);
 
     try {
-      await fs.writeFile(filePath, htmlContent);
+      await writeFile(filePath, htmlContent);
       console.log(`HTML content successfully written to ${filePath}`);
     } catch (err) {
       console.error("Error writing HTML file:", err);
@@ -97,10 +108,10 @@ async function prerender() {
 async function run() {
   try {
     config = JSON.parse(
-      await fs.readFile(path.join(currentWorkDir, "package.json"), "utf8")
+      await readFile(join(currentWorkDir, "package.json"), "utf8")
     )?.spr_config;
 
-    buildDir = path.join(currentWorkDir, config?.buildDir || "build");
+    sourceDir = join(currentWorkDir, config?.sourceDir || "build");
 
     port = config?.port || 4173;
     host = config?.appHost || `http://localhost:${port}`;
@@ -115,8 +126,8 @@ async function run() {
   } catch (err) {
     console.error("Error starting server and prerendering:", err);
   }
-  if (server) server.close();
-  else process.exit(0);
+
+  process.exit(0);
 }
 
 // Run the application
