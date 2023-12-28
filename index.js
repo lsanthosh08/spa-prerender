@@ -48,14 +48,13 @@ async function prerender() {
   page.on("request", (req) => {
     const reqUrl = req.url();
     const reqResourceType = req.resourceType();
-    const allowedHost = [host];
+    let allowedHost = [host];
 
     if (Array.isArray(config?.allowedHost)) {
-      allowedHost.concat(config?.allowedHost);
+      allowedHost = allowedHost.concat(config?.allowedHost);
     } else if (typeof config?.allowedHost === "string") {
       allowedHost.push(config?.allowedHost);
     }
-
     if (
       !(
         Array.isArray(config?.blockedResourceType)
@@ -64,7 +63,7 @@ async function prerender() {
       ).includes(reqResourceType) &&
       (!config?.allowedHost || config?.allowedHost?.includes("*")
         ? true
-        : allowedHost?.some((host) => host && reqUrl.startsWith(host)))
+        : allowedHost?.some((host) => reqUrl.startsWith(host)))
     ) {
       req.continue();
     } else {
