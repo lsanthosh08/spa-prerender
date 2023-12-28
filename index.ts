@@ -1,11 +1,10 @@
-#!/usr/bin/env node
-
-import { stat, readFile, writeFile } from "fs/promises";
+import { stat, readFile, writeFile, readdir } from "fs/promises";
 import puppeteer from "puppeteer";
 import express from "express";
 import { join } from "path";
 
 const currentWorkDir = process.cwd();
+const configFileName = "config.spr.json";
 
 let config: {
     headless: boolean;
@@ -105,11 +104,11 @@ async function prerender() {
   await browser.close();
 }
 
-async function run() {
+export async function run() {
   try {
     config = JSON.parse(
-      await readFile(join(currentWorkDir, "package.json"), "utf8")
-    )?.spr_config;
+      await readFile(join(currentWorkDir, configFileName), "utf8")
+    );
 
     sourceDir = join(currentWorkDir, config?.sourceDir || "build");
 
@@ -130,5 +129,38 @@ async function run() {
   process.exit(0);
 }
 
-// Run the application
-run();
+export async function createConfigJson() {
+  try {
+    const configFilePath = join(currentWorkDir, configFileName);
+
+    // Check if config.spr.json already exists
+    const configExists = (await readdir(currentWorkDir)).includes(
+      configFileName
+    );
+    if (configExists) {
+      console.error(`Error: ${configFileName} already exists.`);
+      return;
+    }
+
+    // Default configuration object
+    const defaultConfig = {
+      headless: true,
+      sourceDir: "build",
+      allowedHost: ["*"],
+      port: 4173,
+      urls: [""],
+      blockedResourceType: [],
+    };
+
+    // Write the default configuration to config.spr.json
+    await writeFile(
+      configFilePath,
+      JSON.stringify(defaultConfig, null, 2) + "\n"
+    );
+    console.log(`${configFileName} created successfully`);
+  } catch (err) {
+    console.error("Error on creating config json", err);
+  } finally {
+    process.exit(0);
+  }
+}

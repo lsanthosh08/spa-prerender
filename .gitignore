@@ -132,3 +132,5 @@ dist
 
 index.js
 index.d.ts
+run.js
+run.d.ts
