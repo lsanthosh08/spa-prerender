@@ -15,10 +15,10 @@ Pre-render any SPA app like react, vue, solid, preact, ect...
 
 > ## Installation
 
-Use the package manager npm to install start-pre-render.
+Use the package manager npm to install.
 
 ```bash
-npm install spa-prerender
+npm install prerender-spa-app
 ```
 
 > ## Usage

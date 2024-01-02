@@ -1,13 +1,10 @@
 {
   "name": "prerender-spa-app",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Pre-render any web app like react, vue, preact, ect,. after production build",
   "main": "index.js",
   "bin": {
     "spr": "./run.js"
-  },
-  "scripts": {
-    "publish": "tsc && npm publish"
   },
   "repository": {
     "type": "git",
